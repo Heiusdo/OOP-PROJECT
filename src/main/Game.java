@@ -17,6 +17,8 @@ public class Game {
         // there exists nothing to pass through the frame
         gamePanel = new GamePanel();
         gameWindow = new GameWindow(gamePanel);
+        // this line let we know that the things we interact with keyboard got focused
+        gamePanel.requestFocus();
 
     }
 }
