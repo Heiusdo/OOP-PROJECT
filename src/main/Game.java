@@ -1,9 +1,9 @@
 package main;
 
 public class Game {
-    // init the GameWindow object
+    // init the GameWindow variable
     private GameWindow gameWindow;
-    // init the GamePanel object
+    // init the GamePanel variable
     private GamePanel gamePanel;
 
     public Game() {

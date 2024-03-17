@@ -7,7 +7,7 @@ public class GameWindow extends JFrame {
     // JFrame class
     private JFrame jframe;
 
-    // add a paramether JPanel panel into the GameWindow constructor
+    // add an object JPanel panel into the GameWindow constructor
     // to link the window and the panel together
     public GameWindow(GamePanel gamePanel) {
         // init a object or an instance of JFrame class named jframe
@@ -15,7 +15,7 @@ public class GameWindow extends JFrame {
         // after initializing the jframe object, we can use it with built-in function
         // --- included in JFrame class
 
-        // ALL THE ACTIONS MUST BE ABOVE THE setvisible FUNCTION
+        // ALL THE ACTIONS MUST BE DONE BEFORE THE setvisible FUNCTION !!!
 
         // the unit is in pixel
         // creat a frame

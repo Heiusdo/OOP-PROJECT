@@ -11,7 +11,7 @@ import java.awt.*; // this is used for importing Graphics class ( java.awt.Graph
 import java.awt.event.*; // this is used for importing KeyEvent class (java.awt.event.KeyEvent)
 
 public class GamePanel extends JPanel {
-    // init the object(instance) of MouseInputs class
+    // init the variable (instance) of MouseInputs class
     private MouseInputs mouseInputs;
     // init the value for moving the rectangle
     private int xDelta = 0, yDelta = 0;
@@ -24,12 +24,21 @@ public class GamePanel extends JPanel {
         // addMouseListener and addMouseMotionListener
 
         MouseInputs mouseInputs = new MouseInputs();
+        // create KeyboardInputs object to pass in addKeyListener() which is used for
+        // tracking the keyboard
+        KeyboardInputs keyboardInputs = new KeyboardInputs(this);
         // place the KeyboardInputs object inside the addKeyListener method
         // --
         // Since the object implement the KeyListener, so object can use methods
         // included in KeyListener interface for the addKeylistener method
-
-        addKeyListener(new KeyboardInputs(this));
+        // --
+        // addKeylistener() is linked with the obj of KeyboardInputs class
+        // and the obj is linked with the obj gamePanel (this), can check in the
+        // KeyboardInputs constructor
+        // --
+        // so I make a change in the keyboardInputs obj, the gamePanel obj is affected
+        // as well
+        addKeyListener(keyboardInputs);
         // for clicking, pressing, releasing the mouse
         // --
         // We have to init the variable (considered as object) at first, else we adding
@@ -54,15 +63,17 @@ public class GamePanel extends JPanel {
         repaint();
     }
 
-    // the paintComponent method is in JPaned, we never call it, it is called when
+    // the paintComponent method is in JPanel, we never call it, it is called when
     // the game is started
 
-    // JPaned itself can not draw, it needs a Graphics object to do it
+    // JPanel itself can not draw, it needs a Graphics object to do it
     // JFrame + JPanel = GameWindow
     // Graphics allow us to draw to the Panel
     // basically, when we need to draw something, we need paintComponent method from
     // JPanel class with
     // object "g" from Graphics class
+    // ----------- Graphics g in this case is a object parameter
+    // object parameter exists when the parameter type is a class.
     public void paintComponent(Graphics g) {
         // this line below is calling JComponent's paintComponent, JComponent is the
         // superclass of JPanel
