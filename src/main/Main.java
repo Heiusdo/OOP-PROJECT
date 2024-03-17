@@ -7,4 +7,7 @@ public class Main {
 
     }
     // test commit
+    // object sẽ chỉ thực hiện những hành động có trong constructor 1 cách tự động,
+    // còn những methods khác có trong class thì cần phải gọi tới thì mới có thể
+    // thực hiện các methods đấy
 }

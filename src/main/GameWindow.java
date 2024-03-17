@@ -31,6 +31,7 @@ public class GameWindow extends JFrame {
         // set the gamewindow to appear in the middle of our pc screen instead of the
         // top right
         jframe.setLocationRelativeTo(null);
+
         // make it visiable
         jframe.setVisible(true);
     }

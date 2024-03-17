@@ -38,7 +38,7 @@ public class GamePanel extends JPanel {
         // --
         // so I make a change in the keyboardInputs obj, the gamePanel obj is affected
         // as well
-        addKeyListener(keyboardInputs);
+        addKeyListener(keyboardInputs);// (GamePanel gamePanel)
         // for clicking, pressing, releasing the mouse
         // --
         // We have to init the variable (considered as object) at first, else we adding
@@ -79,7 +79,7 @@ public class GamePanel extends JPanel {
         // superclass of JPanel
         // It looks like this, " public class JPanel extends JComponent implements
         // Accessible "
-        super.paintComponent(g);
+        // super.paintComponent(g);
 
         // 'g' can use built-in functions of Graphics class, cuz it's a Graphics
         // instance

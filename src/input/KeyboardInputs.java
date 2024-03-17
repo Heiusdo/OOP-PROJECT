@@ -8,15 +8,25 @@ import main.GamePanel;
 // you extend a Class but implement an Interface
 // you can only extend 1 Class (1 child has 1 Dad), but you can implement many Interface
 public class KeyboardInputs implements KeyListener {
+    // init a gamePanel variable with GamePanel type
+    // the purpose is to have this variable interacted with the methods, which
+    // interact with the keyboard, included inside the KeyListener interface
     private GamePanel gamePanel;
 
-    // adding the GamePanel object as the parameter into KeyboardInputs constructor
+    // adding the GamePanel object as the object parameter into KeyboardInputs
+    // constructor
     // To link the keyboard and the game panel together, so the object of
     // KeyboardInputs class can interact with the object of GamePanel class
 
     public KeyboardInputs(GamePanel gamePanel) {
-        //
+        // the variable initialized above is assigned equally to the "object parameter
+        // gamePanel"
+        // --
+        // anything happen with the variable will affect the parameter as well.
+        // mean the object parameter gamePanel is changed based on the object variable
+        // gamePanel
         this.gamePanel = gamePanel;
+
     }
 
     // public void setGamePanel(GamePanel gamePanel){
