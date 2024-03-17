@@ -79,7 +79,7 @@ public class GamePanel extends JPanel {
         // superclass of JPanel
         // It looks like this, " public class JPanel extends JComponent implements
         // Accessible "
-        // super.paintComponent(g);
+        super.paintComponent(g);
 
         // 'g' can use built-in functions of Graphics class, cuz it's a Graphics
         // instance
