@@ -14,4 +14,6 @@ public class Main {
     // initializing object does not require the constructor of that class
     // example class car, the constructor here can be considered the equipment of
     // that car, the methods is like stop, run...
+
+    //
 }

@@ -43,6 +43,10 @@ public class GamePanel extends JPanel {
         // --
         // We have to init the variable (considered as object) at first, else we adding
         // 2 different mouse inputs (new MouseInputs())
+        // ---
+        // whenever the event of the mouse object fits the addMouseListener method, the
+        // methods thatfit the addMouseListener() will be automatically called by the
+        // Java runtime system
         addMouseListener(mouseInputs);
         // for moving(the cursor on the screen), dragging(click and move the mouse)
         addMouseMotionListener(mouseInputs);
@@ -74,6 +78,10 @@ public class GamePanel extends JPanel {
     // object "g" from Graphics class
     // ----------- Graphics g in this case is a object parameter
     // object parameter exists when the parameter type is a class.
+    // --
+    // The paintComponent method is a part of the JPanel class which gets
+    // automatically called by the Swing framework under certain situations, such as
+    // when the window is resized or made visible
     public void paintComponent(Graphics g) {
         // this line below is calling JComponent's paintComponent, JComponent is the
         // superclass of JPanel
