@@ -11,7 +11,7 @@ public class KeyboardInputs implements KeyListener {
     // init a gamePanel variable with GamePanel type
     // the purpose is to have this variable interacted with the methods, which
     // interact with the keyboard, included inside the KeyListener interface
-    private GamePanel test;
+    private GamePanel gamePanel;
 
     // adding the GamePanel object as the object parameter into KeyboardInputs
     // constructor
@@ -26,7 +26,9 @@ public class KeyboardInputs implements KeyListener {
         // gán reference để cùng chỉ vào 1 bộ nhớ
         // Đây là dạng pass by reference, nếu không tham chiếu biến test tới đối tượng
         // của lớp GamePanel thì không thể thay đổi giá trị của đối tượng đó
-        this.test = gamePanel;
+        // nếu không tham chiếu, vẫn có thể truy cập methods, nhưng không thể thay đổi
+        // thuộc tính của đối tượng.
+        this.gamePanel = gamePanel;
 
     }
 
@@ -39,17 +41,17 @@ public class KeyboardInputs implements KeyListener {
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W:
-                test.changeYDelta(-5);
+                gamePanel.changeYDelta(-5);
 
                 break;
             case KeyEvent.VK_A:
-                test.changeXDelta(-5);
+                gamePanel.changeXDelta(-5);
                 break;
             case KeyEvent.VK_D:
-                test.changeXDelta(5);
+                gamePanel.changeXDelta(5);
                 break;
             case KeyEvent.VK_S:
-                test.changeYDelta(5);
+                gamePanel.changeYDelta(5);
                 break;
         }
     }

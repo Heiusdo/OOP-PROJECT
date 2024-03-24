@@ -9,21 +9,32 @@ import input.MouseInputs;
 
 import java.awt.*; // this is used for importing Graphics class ( java.awt.Graphics)
 import java.awt.event.*; // this is used for importing KeyEvent class (java.awt.event.KeyEvent)
+import java.util.Random;
 
 public class GamePanel extends JPanel {
     // init the variable (instance) of MouseInputs class
     private MouseInputs mouseInputs;
     // init the value for moving the rectangle
-    private int xDelta = 0, yDelta = 0;
-    private int xoriginal = 100, yoriginal = 100;
+    private float xDelta = 100;
+    private float yDelta = 100;
+    private float xUpdate = 0.03f;
+    private float yUpdate = 0.03f;
+    private Color color = new Color(24, 3, 203);
+    private Random random;
+    // private int xoriginal = 100, yoriginal = 100;
+    private int frame;
+    private long lastCheck;
 
     // inside the constructor is where we add our inputs to the game
     public GamePanel() {
+
+        random = new Random();
         // the line below create an object of MouseInputs class, so that the object can
         // be passed through 2 methods relating to the MouseInputs class which are
         // addMouseListener and addMouseMotionListener
+        // --
 
-        MouseInputs mouseInputs = new MouseInputs();
+        MouseInputs mouseInputs = new MouseInputs(this);
         // create KeyboardInputs object to pass in addKeyListener() which is used for
         // tracking the keyboard
         KeyboardInputs keyboardInputs = new KeyboardInputs(this);
@@ -32,12 +43,6 @@ public class GamePanel extends JPanel {
         // Since the object implement the KeyListener, so object can use methods
         // included in KeyListener interface for the addKeylistener method
         // --
-        // addKeylistener() is linked with the obj of KeyboardInputs class
-        // and the obj is linked with the obj gamePanel (this), can check in the
-        // KeyboardInputs constructor
-        // --
-        // so I make a change in the keyboardInputs obj, the gamePanel obj is affected
-        // as well
         addKeyListener(keyboardInputs);// (GamePanel gamePanel)
         // for clicking, pressing, releasing the mouse
         // --
@@ -45,7 +50,7 @@ public class GamePanel extends JPanel {
         // 2 different mouse inputs (new MouseInputs())
         // ---
         // whenever the event of the mouse object fits the addMouseListener method, the
-        // methods thatfit the addMouseListener() will be automatically called by the
+        // methods that fit the addMouseListener() will be automatically called by the
         // Java runtime system
         addMouseListener(mouseInputs);
         // for moving(the cursor on the screen), dragging(click and move the mouse)
@@ -53,20 +58,27 @@ public class GamePanel extends JPanel {
 
     }
 
-    // changing the xDelta value for the changes of rectangle
+    // changing the xDelta value for changing rectangle through keyboard
+
     public void changeXDelta(int value) {
         this.xDelta += value;
         // the system is not told to repaint after changing value, thats why we need
         // this method
+        // it is used to call the paintComponent method.
         repaint();
     }
 
-    // changing the yDelta value for the changes of rectangle
+    // changing the yDelta value for changing rectangle through keyboard
     public void changeYDelta(int value) {
         this.yDelta += value;
         repaint();
     }
 
+    public void setRectPosi(int x, int y) {
+        this.xDelta = x;
+        this.yDelta = y;
+        repaint();
+    }
     // the paintComponent method is in JPanel, we never call it, it is called when
     // the game is started
 
@@ -89,14 +101,56 @@ public class GamePanel extends JPanel {
         // Accessible "
         super.paintComponent(g);
 
+        UpdateRect();
+        g.setColor(color);
+
         // 'g' can use built-in functions of Graphics class, cuz it's a Graphics
         // instance
         // 1st = x posi, 2nd = y posi, 3rd = width, 4th = height
-        g.drawRect(xoriginal, yoriginal, 200, 50);
+        // g.drawRect(xoriginal, yoriginal, 200, 50);
         // fill the retangle
-        g.fillRect(xoriginal + xDelta, yoriginal + yDelta, 200, 50);
-
+        g.fillRect((int) xDelta, (int) yDelta, 200, 50);
+        frame++;
+        // System.currentTimeMillis() returns the current time in milliseconds since the
+        // Unix epoch (midnight, January 1, 1970 UTC)
+        // means, even the lastcheck variable can hold the currenttime value, it is
+        // still smaller than the currenttime value, since time continue to progress
+        if (System.currentTimeMillis() - lastCheck >= 1000) {
+            lastCheck = System.currentTimeMillis();
+            System.out.println("FPS: " + frame);
+            frame = 0;
+        }
+        // repaint() call the paintComponent method rapidly in 1 second (due to the if
+        // statement >=1000milisec) and that results in the large of frame (fps).
+        repaint(); // the loop
     }
     // test commit
+
+    private void UpdateRect() {
+        xDelta += xUpdate;
+        // set it >400 cuz the rectangle is 400 width, since the width is 400, larger
+        // than 400 will make the rectangle move out of the screen
+        // the same with <0
+        if (xDelta > 400 || xDelta < 0) {
+            // when reach 401, xDelta = xDelta - 0.003, keep decreasing til it reach 0, when
+            // reach 0, xDelta = xDelta + 0.003
+            xUpdate *= -1;
+            color = getRndColor();
+        }
+
+        yDelta += yUpdate;
+        if (yDelta > 400 || yDelta < 0) {
+            yUpdate *= -1;
+            color = getRndColor();
+        }
+    }
+
+    private Color getRndColor() {
+        // random.nextInt(256) will return a random number from 0 to 255
+        int r = random.nextInt(256);
+        int g = random.nextInt(256);
+        int b = random.nextInt(256);
+        return new Color(r, g, b);
+    }
 
 }
