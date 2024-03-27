@@ -122,11 +122,17 @@ public class GamePanel extends JPanel {
         }
         // repaint() call the paintComponent method rapidly in 1 second (due to the if
         // statement >=1000milisec) and that results in the large of frame (fps).
-        repaint(); // the loop
+        // in a second, the paintComponent method can be called 1000 times, so the fps
+        // will be 1000
+        // --
+        // the loop
+        // repaint();
     }
     // test commit
 
     private void UpdateRect() {
+        // the xDelta will be updated by xUpdate, so it will keep increasing every time
+        // the paintComponent method is called.
         xDelta += xUpdate;
         // set it >400 cuz the rectangle is 400 width, since the width is 400, larger
         // than 400 will make the rectangle move out of the screen
