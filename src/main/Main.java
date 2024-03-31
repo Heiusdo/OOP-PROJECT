@@ -11,9 +11,5 @@ public class Main {
     // còn những methods khác có trong class thì cần phải gọi tới thì mới có thể
     // thực hiện các methods đấy
 
-    // initializing object does not require the constructor of that class
-    // example class car, the constructor here can be considered the equipment of
-    // that car, the methods is like stop, run...
-
     //
 }

@@ -9,6 +9,8 @@ public class Game implements Runnable {
     private Thread gameThread;
     // init the variable for the frames per second
     private final int FPS_SET = 120;
+    private int frame;
+    private long lastCheck;
 
     public Game() {
         // since I already previously initialized the object or the instance of
@@ -27,8 +29,18 @@ public class Game implements Runnable {
 
     }
 
+    //
     private void startGameloop() {
+        // The this keyword in the startGameloop() method refers to the implicit Game
+        // object that is created at the beginning of the program. By passing 'this' to
+        // the Thread constructor, you are telling the Thread object to use the run()
+        // method of the Game class as the entry point for the new thread.
         gameThread = new Thread(this);
+        // This line starts the new thread. When a thread is started, the Java Virtual
+        // Machine (JVM) calls the run() method of the Thread object.
+        // However, since the Thread class's run() method does nothing by default, thats
+        // why we passing "this" ( the Game class's object) to the Thread constructor,
+        // so the run() method of the Game class is called instead.
         gameThread.start();
     }
 
@@ -49,6 +61,10 @@ public class Game implements Runnable {
         long lastFrame = System.nanoTime();
 
         while (true) {
+
+            // lệnh if ở dưới là để vẽ ra các frame tương ứng với số thời gian cần thiết để
+            // vẽ ra 1 frame
+
             // if timePerFrame is set to 120 FPS, the value of timePerFrame would be
             // 8333333.33 nanoseconds (1000000000.0 / 120.0).
             // --
@@ -63,7 +79,27 @@ public class Game implements Runnable {
                 gamePanel.repaint();
                 // update the lastFrame variable to the current time for the next loop
                 lastFrame = System.nanoTime();
+                frame++;
             }
+
+            // điều kiện if ở dưới để in ra số frame mỗi giây
+
+            // System.currentTimeMillis() returns the current time in milliseconds since the
+            // Unix epoch (midnight, January 1, 1970 UTC)
+            // means, even the lastcheck variable can hold the currenttime value, it is
+            // still smaller than the currenttime value, since time continue to progress
+            if (System.currentTimeMillis() - lastCheck >= 1000) {
+                lastCheck = System.currentTimeMillis();
+                System.out.println("FPS: " + frame);
+                frame = 0;
+            }
+            // repaint() call the paintComponent method rapidly in 1 second (due to the if
+            // statement >=1000milisec) and that results in the large of frame (fps).
+            // in a second, the paintComponent method can be called 1000 times, so the fps
+            // will be 1000
+            // --
+            // the loop
+            // repaint();
         }
     }
 }

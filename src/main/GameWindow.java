@@ -18,10 +18,6 @@ public class GameWindow extends JFrame {
 
         // ALL THE ACTIONS MUST BE DONE BEFORE THE setvisible FUNCTION !!!
 
-        // the unit is in pixel
-        // creat a frame
-        jframe.setSize(400, 400);
-
         // this function allow us to kill the terminal whenever clicking the X button of
         // ----the frame, without this the program still running
 
@@ -36,8 +32,15 @@ public class GameWindow extends JFrame {
         // set the gamewindow to appear in the middle of our pc screen instead of the
         // top right
         jframe.setLocationRelativeTo(null);
-
-        // make it visiable
+        // this line of code is used to make the frame not resizable by dragging from
+        // the corner, ( not making the window smaller or bigger ).
+        jframe.setResizable(false);
+        // this line is telling Jframe to fit the size of the window to the preferred
+        // size of its components, we have only one component which is the gamePanel
+        // with 1280x800, so Jframe will create a window that fits the jpanel by that
+        // dimension(1280x800).
+        jframe.pack();
+        // make it visiable.
         jframe.setVisible(true);
     }
 }
