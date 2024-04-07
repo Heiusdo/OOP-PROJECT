@@ -1,6 +1,7 @@
 package main;
 
 import javax.imageio.ImageIO;
+
 import javax.swing.JPanel;
 
 import input.KeyboardInputs;// import a class from different package
@@ -9,23 +10,43 @@ import input.MouseInputs;
 // import java.awt.event.KeyListener;
 
 import java.awt.*; // this is used for importing Graphics class ( java.awt.Graphics)
-import java.awt.event.*; // this is used for importing KeyEvent class (java.awt.event.KeyEvent)
+// this is used for importing KeyEvent class (java.awt.event.KeyEvent)
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static utilz.Constants.PlayerConstants.*;
+import static utilz.Constants.Direction.*;
 
 public class GamePanel extends JPanel {
-    // init the variable (instance) of MouseInputs class
-    private MouseInputs mouseInputs;
+
     // init the value for moving the rectangle
     private float xDelta = 100;
     private float yDelta = 100;
 
-    private BufferedImage img;
+    private BufferedImage image;
+    private BufferedImage[][] animation;
+    // 15 is just an arbitrary value chosen for the purpose of this specific
+    // animation. The animationSpeed variable determines how many ticks (or frames)
+    // it takes for the animation to complete one cycle. A higher value for
+    // animationSpeed will make the animation slower, while a lower value will make
+    // it faster.
+    // --
+    // it means each image will take 15 ticks (or frames, in milliseconds unit) to
+    // be shown on the screen,
+    private int animationTick, animationIndex, animationSpeed = 30;
+    private int playerAction = idle;
+    // set = -1 so that the player will not move at first
+    private int playerDirection = -1;
+    private boolean moving;
 
     // inside the constructor is where we add our inputs to the game
     public GamePanel() {
         importImg();
+        loadAnimation();
         // the line below create an object of MouseInputs class, so that the object can
         // be passed through 2 methods relating to the MouseInputs class which are
         // addMouseListener and addMouseMotionListener
@@ -56,13 +77,30 @@ public class GamePanel extends JPanel {
 
     }
 
-    private void importImg() {
-        InputStream is = getClass().getResourceAsStream("/Idle Sword 01.png");
-        try {
-            img = ImageIO.read(is);
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void loadAnimation() {
+        // the line below is used to create an array of BufferedImage with the size of
+        // 9x6 (9 rows and 6 columns). Each element in this array represent a frame of
+        // the animation.
+        animation = new BufferedImage[9][6];
+        for (int i = 0; i < animation.length; i++) {
+            for (int j = 0; j < animation[i].length; j++)
+                // the image.getSubimage() is used to cut the image into pieces
+                // The extracted subimage is then assigned to the i and jth position of the
+                // animation array.
+                // subimage(x, y, width, height)
+                animation[i][j] = image.getSubimage(j * 64, i * 40, 64, 40);
         }
+
+    }
+
+    private void importImg() {
+
+        try {
+            image = ImageIO.read(new File("src/images/player_sprites.png"));
+        } catch (IOException ex) {
+            Logger.getLogger(GamePanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     // set the size of the panel
@@ -73,25 +111,94 @@ public class GamePanel extends JPanel {
         setMaximumSize(size);
     }
 
-    public void changeXDelta(int value) {
-        this.xDelta += value;
-        // the system is not told to repaint after changing value, thats why we need
-        // this method
-        // it is used to call the paintComponent method.
-        repaint();
+    // public void setRectPosi(int x, int y) {
+    // this.xDelta = x;
+    // this.yDelta = y;
+    // repaint();
+    // }
+
+    public void setDirection(int direction) {
+        this.playerDirection = direction;
+        moving = true;
     }
 
-    // changing the yDelta value for changing rectangle through keyboard
-    public void changeYDelta(int value) {
-        this.yDelta += value;
-        repaint();
+    public void setMoving(boolean moving) {
+        this.moving = moving;
     }
 
-    public void setRectPosi(int x, int y) {
-        this.xDelta = x;
-        this.yDelta = y;
-        repaint();
+    // This method is responsible for updating the animation tick and the animation
+    // index. The animation tick is a counter that increments every time this method
+    // is called. When it reaches or exceeds the animation speed (which is 30, in
+    // this case), it resets to 0 and increments the animation index. The animation
+    // index is used to determine which frame of the animation to display. When it
+    // reaches or exceeds the length of the animation array, it resets to 0.
+    // --
+    // it will keep drawing the same image of til the animationtick reach 30, then
+    // animationIndex is incremented to 1
+    // After this, animationTick is reset to 0, and the process repeats.
+    // animationIndex continues to increment every 30 iterations of
+    // updateAnimationTick(), allowing for smooth animation in the game.
+    // --
+    // at first animationtick and index are 0.
+    // this method get invoked rapidly since the paintComponent get invoked
+    // rapidly as well due to the repaint() method from the gameloop (fps, run()
+    // method from Game class)
+
+    // the comments above is for the old version of the game with 1D array,
+    // the new version of the game is using 2D array.
+    // the reason why we have to set animationIndex >= GetSpriteAmount(playerAction)
+    // but not 6 ( the max column value of the array ), is because the
+    // GetSpriteAmount method is used to get the amount of sprite in each action, so
+    // it is more dynamic and flexible, and some action does not have enough 6
+    // sprites.
+    private void updateAnimationTick() {
+        animationTick++;
+        if (animationTick >= animationSpeed) {
+            animationTick = 0;
+            animationIndex++;
+            if (animationIndex >= GetSpriteAmount(playerAction))
+                animationIndex = 0;
+        }
     }
+
+    // At the moment the setAnimation() method is called, the value of the moving
+    // variable is true (or any other non-zero value). This is because the moving
+    // variable is set to true in the keyPressed() method when the VK_RIGHT or
+    // VK_LEFT keys are pressed.
+    private void setAnimation() {
+        if (moving) {
+            playerAction = RUNNING;
+        } else {
+            playerAction = idle;
+        }
+    }
+
+    private void updatePosition() {
+        if (moving)
+
+            switch (playerDirection) {
+                case RIGHT:
+                    xDelta += 5;
+                    break;
+                case LEFT:
+                    xDelta -= 5;
+                    break;
+                case UP:
+                    yDelta -= 5;
+                    break;
+                case DOWN:
+                    yDelta += 5;
+                    break;
+            }
+    }
+
+    public void updateGame() {
+        updateAnimationTick();
+        setAnimation();
+        updatePosition();
+
+    }
+
     // the paintComponent method is in JPanel, we never call it, it is called when
     // the game is started
 
@@ -113,7 +220,14 @@ public class GamePanel extends JPanel {
         // It looks like this, " public class JPanel extends JComponent implements
         // Accessible "
         super.paintComponent(g);
-        // g.drawImage(img, (int) 0, (int) 0, null);
+
+        // the line below is used to draw image on the screen, (0,0) stands for the
+        // position of image
+        // g.drawImage(image, (int) 0, (int) 0, null);
+        // the line below is used to draw image on the screen, (xDelta, yDelta) stands
+        // for the position of image, and (100,100) stands for the size of the image
+        // g.drawImage(image, (int) xDelta, (int) yDelta, 500, 500, null);
+        g.drawImage(animation[playerAction][animationIndex], (int) xDelta, (int) yDelta, 258, 160, null);
 
     }
 

@@ -9,7 +9,10 @@ public class Game implements Runnable {
     private Thread gameThread;
     // init the variable for the frames per second
     private final int FPS_SET = 120;
+    // init the variable for the updates per second
+    private final int UPS_SET = 200;
     private int frame;
+    private int update;
     private long lastCheck;
 
     public Game() {
@@ -44,6 +47,10 @@ public class Game implements Runnable {
         gameThread.start();
     }
 
+    public void update() {
+        gamePanel.updateGame();
+    }
+
     // this is where the gameloop stays
     @Override
     public void run() {
@@ -52,15 +59,50 @@ public class Game implements Runnable {
         // (1,000,000,000) by the desired frames per second (FPS_SET)
         // the timePerFrame is the time taken for each frame to be displayed
         double timePerFrame = 1000000000.0 / FPS_SET;
+        //
+        double timePerUpdate = 1000000000.0 / UPS_SET;
         // this is the variable that stores the time at which the last frame was
         // displayed
         // this line run before the game loop starts, so the nanotime the lastFrame
         // variable initially take as its value at first will always smaller compare to
         // the nanotime in the if statement of while loop
+        long previousTime = System.nanoTime();
+        int frame = 0;
+        int update = 0;
 
-        long lastFrame = System.nanoTime();
+        // long lastFrame = System.nanoTime();
+        //
+        double deltaU = 0;
+        double deltaF = 0;
 
         while (true) {
+
+            long currentTime = System.nanoTime();
+            // the delta variable stores the time that has passed since the last frame was
+            // displayed. It is calculated by subtracting the time at which the last frame
+            // was displayed from the current time.
+            // If the delta is greater than or equal to the timePerFrame, the game will skip
+            // some frames and continue on with updating the game.
+            deltaU += (currentTime - previousTime) / timePerUpdate;
+            deltaF += (currentTime - previousTime) / timePerFrame;
+            previousTime = currentTime;
+
+            if (deltaF >= 1) {
+                gamePanel.repaint();
+                // update the lastFrame variable to the current time for the next loop
+                // lastFrame = System.nanoTime();
+                frame++;
+                // reset the deltaF variable to 0 because we have displayed a frame
+                deltaF--;
+            }
+            // it requires 1 second to update the game once, so if the deltaU is smaller
+            // than 1 second it wont call the update method
+            if (deltaU >= 1) {
+                update();
+                update++;
+                // reset the deltaU variable to 0 because we have updated the game once
+                deltaU--;
+            }
 
             // lệnh if ở dưới là để vẽ ra các frame tương ứng với số thời gian cần thiết để
             // vẽ ra 1 frame
@@ -74,13 +116,14 @@ public class Game implements Runnable {
             // --
             // Therefore, repaint() method would be called 120 times in one second,
             // resulting in a frame rate of 120 FPS (frames per second).
-            if (System.nanoTime() - lastFrame >= timePerFrame) {
+            // -------------------
+            // if (System.nanoTime() - lastFrame >= timePerFrame) {
 
-                gamePanel.repaint();
-                // update the lastFrame variable to the current time for the next loop
-                lastFrame = System.nanoTime();
-                frame++;
-            }
+            // gamePanel.repaint();
+            // // update the lastFrame variable to the current time for the next loop
+            // lastFrame = System.nanoTime();
+            // frame++;
+            // }
 
             // điều kiện if ở dưới để in ra số frame mỗi giây
 
@@ -90,8 +133,9 @@ public class Game implements Runnable {
             // still smaller than the currenttime value, since time continue to progress
             if (System.currentTimeMillis() - lastCheck >= 1000) {
                 lastCheck = System.currentTimeMillis();
-                System.out.println("FPS: " + frame);
+                System.out.println("FPS: " + frame + "  UPS: " + update);
                 frame = 0;
+                update = 0;
             }
             // repaint() call the paintComponent method rapidly in 1 second (due to the if
             // statement >=1000milisec) and that results in the large of frame (fps).

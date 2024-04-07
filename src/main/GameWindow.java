@@ -29,6 +29,7 @@ public class GameWindow extends JFrame {
         // paintComponent method is indeed automatically called, and the rectangle is
         // drawn on the panel.
         jframe.add(gamePanel);
+
         // set the gamewindow to appear in the middle of our pc screen instead of the
         // top right
         jframe.setLocationRelativeTo(null);

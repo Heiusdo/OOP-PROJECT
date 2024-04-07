@@ -30,7 +30,7 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
         // the getX and getY methods are built-in methods of the MouseEvent class and
         // they can be used to retrieve the current x and y coordinates of the mouse
         // pointer.
-        gamePanel.setRectPosi(e.getX(), e.getY());
+        // gamePanel.setRectPosi(e.getX(), e.getY());
 
     }
 
