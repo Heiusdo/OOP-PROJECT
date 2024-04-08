@@ -37,7 +37,7 @@ public class MouseInputs implements MouseListener, MouseMotionListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         System.out.println("mouse clicked!");
-        if (e.getComponent().getClass().getName() == "main.GamePanel")
+        if (e.getComponent().getClass().getName().equals(GamePanel.class.getName()))
             e.getComponent().requestFocus();
     }
 
