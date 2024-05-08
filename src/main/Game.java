@@ -1,5 +1,9 @@
 package main;
 
+import java.awt.Graphics;
+
+import entities.Player;
+
 public class Game implements Runnable {
     // init the GameWindow variable
     private GameWindow gameWindow;
@@ -15,7 +19,10 @@ public class Game implements Runnable {
     private int update;
     private long lastCheck;
 
+    private Player player;
+
     public Game() {
+        initClasses();
         // since I already previously initialized the object or the instance of
         // GameWindow class, can do this instead of GameWindow gameWindow = new
         // GameWindow();
@@ -24,12 +31,18 @@ public class Game implements Runnable {
 
         // need to init the GamePanel one first, if we place it below the gamewindow,
         // there exists nothing to pass through the frame
-        gamePanel = new GamePanel();
+        gamePanel = new GamePanel(this);
         gameWindow = new GameWindow(gamePanel);
+        gamePanel.setFocusable(true);
         // this line let we know that the things we interact with keyboard got focused
         gamePanel.requestFocus();
+
         startGameloop();
 
+    }
+
+    private void initClasses() {
+        player = new Player(200, 200);
     }
 
     //
@@ -48,7 +61,11 @@ public class Game implements Runnable {
     }
 
     public void update() {
-        gamePanel.updateGame();
+        player.update();
+    }
+
+    public void render(Graphics g) {
+        player.render(g);
     }
 
     // this is where the gameloop stays
@@ -145,5 +162,14 @@ public class Game implements Runnable {
             // the loop
             // repaint();
         }
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void WindowFocusLost() {
+        player.resetDirBooleans();
+
     }
 }

@@ -1,5 +1,7 @@
 package main;
 
+import java.awt.event.WindowFocusListener;
+
 import javax.swing.JFrame;
 
 public class GameWindow extends JFrame {
@@ -43,5 +45,20 @@ public class GameWindow extends JFrame {
         jframe.pack();
         // make it visiable.
         jframe.setVisible(true);
+        // this is used to get the window focus when I accidentally change tabs,
+        // without this, a problem exists, which is when I hit D for moving to the right
+        // and changing the tab, the system have no idea what I just did so character
+        // will be moving even though I released the D button
+        jframe.addWindowFocusListener(new WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent e) {
+                gamePanel.requestFocusInWindow();
+            }
+
+            @Override
+            public void windowLostFocus(java.awt.event.WindowEvent e) {
+                gamePanel.getGame().WindowFocusLost();
+            }
+        });
     }
 }

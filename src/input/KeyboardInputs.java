@@ -29,7 +29,8 @@ public class KeyboardInputs implements KeyListener {
         // --
 
         // gán reference để cùng chỉ vào 1 bộ nhớ
-        // Đây là dạng pass by reference, nếu không tham chiếu biến test tới đối tượng
+        // Đây là dạng pass by reference, nếu không tham chiếu biến gamePanel tới đối
+        // tượng
         // của lớp GamePanel thì không thể thay đổi giá trị của đối tượng đó
         // nếu không tham chiếu, vẫn có thể truy cập methods, nhưng không thể thay đổi
         // thuộc tính của đối tượng.
@@ -44,25 +45,19 @@ public class KeyboardInputs implements KeyListener {
     // these methods will show out everything that I interact with the keyboard.
 
     public void keyPressed(KeyEvent e) {
-        System.out.println("SS");
 
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W:
-                gamePanel.setDirection(UP);
-                System.out.println("w");
-
+                gamePanel.getGame().getPlayer().setUp(true);
                 break;
             case KeyEvent.VK_A:
-                gamePanel.setDirection(LEFT);
-
+                gamePanel.getGame().getPlayer().setLeft(true);
                 break;
             case KeyEvent.VK_D:
-                gamePanel.setDirection(RIGHT);
-
+                gamePanel.getGame().getPlayer().setRight(true);
                 break;
             case KeyEvent.VK_S:
-                gamePanel.setDirection(DOWN);
-
+                gamePanel.getGame().getPlayer().setDown(true);
                 break;
         }
 
@@ -71,15 +66,19 @@ public class KeyboardInputs implements KeyListener {
     /* */
     @Override
     public void keyReleased(KeyEvent e) {
-        System.out.println("SS");
 
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W:
-
+                gamePanel.getGame().getPlayer().setUp(false);
+                break;
             case KeyEvent.VK_A:
+                gamePanel.getGame().getPlayer().setLeft(false);
+                break;
             case KeyEvent.VK_D:
+                gamePanel.getGame().getPlayer().setRight(false);
+                break;
             case KeyEvent.VK_S:
-                gamePanel.setMoving(false);
+                gamePanel.getGame().getPlayer().setDown(false);
                 break;
         }
     }
