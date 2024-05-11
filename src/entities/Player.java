@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 import main.GamePanel;
+import utilz.LoadSave;
 
 public class Player extends Entity {
     private BufferedImage[][] animation;
@@ -29,8 +30,8 @@ public class Player extends Entity {
 
     private boolean moving = false, attacking = false;
 
-    public Player(float x, float y) {
-        super(x, y);
+    public Player(float x, float y, int width, int height) {
+        super(x, y, width, height);
         loadAnimation();
 
     }
@@ -137,24 +138,19 @@ public class Player extends Entity {
     }
 
     private void loadAnimation() {
-        try {
-            BufferedImage image = ImageIO.read(new File("src/images/player_sprites.png"));
-
-            // the line below is used to create an array of BufferedImage with the size of
-            // 9x6 (9 rows and 6 columns). Each element in this array represent a frame of
-            // the animation.
-            animation = new BufferedImage[9][6];
-            for (int i = 0; i < animation.length; i++) {
-                for (int j = 0; j < animation[i].length; j++) {
-                    // the image.getSubimage() is used to cut the image into pieces
-                    // The extracted subimage is then assigned to the i and jth position of the
-                    // animation array.
-                    // subimage(x, y, width, height)
-                    animation[i][j] = image.getSubimage(j * 64, i * 40, 64, 40);
-                }
+        BufferedImage image = LoadSave.GetSpritesAtlas(LoadSave.PLAYER_ATLAS);
+        // the line below is used to create an array of BufferedImage with the size of
+        // 9x6 (9 rows and 6 columns). Each element in this array represent a frame of
+        // the animation.
+        animation = new BufferedImage[9][6];
+        for (int i = 0; i < animation.length; i++) {
+            for (int j = 0; j < animation[i].length; j++) {
+                // the image.getSubimage() is used to cut the image into pieces
+                // The extracted subimage is then assigned to the i and jth position of the
+                // animation array.
+                // subimage(x, y, width, height)
+                animation[i][j] = image.getSubimage(j * 64, i * 40, 64, 40);
             }
-        } catch (IOException ex) {
-            Logger.getLogger(GamePanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

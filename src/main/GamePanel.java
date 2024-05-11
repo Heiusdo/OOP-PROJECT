@@ -8,6 +8,8 @@ import input.MouseInputs;
 // import java.awt.event.KeyListener;
 
 import java.awt.*; // this is used for importing Graphics class ( java.awt.Graphics)
+import static main.Game.GAME_WIDTH;
+import static main.Game.GAME_HEIGHT;
 
 public class GamePanel extends JPanel {
 
@@ -50,7 +52,7 @@ public class GamePanel extends JPanel {
 
     // set the size of the panel
     private void setPanelSize() {
-        Dimension size = new Dimension(1280, 800);
+        Dimension size = new Dimension(GAME_WIDTH, GAME_HEIGHT);
         setMinimumSize(size);
         setPreferredSize(size);
         setMaximumSize(size);
