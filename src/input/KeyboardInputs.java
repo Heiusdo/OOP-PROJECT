@@ -7,6 +7,7 @@ import static utilz.Constants.Direction.UP;
 
 import java.awt.event.*;
 
+import gamestates.Gamestate;
 import main.GamePanel;
 
 // A class included filled methods, an Interface includes empty methods
@@ -45,19 +46,14 @@ public class KeyboardInputs implements KeyListener {
     // these methods will show out everything that I interact with the keyboard.
 
     public void keyPressed(KeyEvent e) {
-
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_W:
-                gamePanel.getGame().getPlayer().setUp(true);
+        switch (Gamestate.state) {
+            case MENU:
+                gamePanel.getGame().getMenu().keyPressed(e);
                 break;
-            case KeyEvent.VK_A:
-                gamePanel.getGame().getPlayer().setLeft(true);
+            case PLAYING:
+                gamePanel.getGame().getPlaying().keyPressed(e);
                 break;
-            case KeyEvent.VK_D:
-                gamePanel.getGame().getPlayer().setRight(true);
-                break;
-            case KeyEvent.VK_S:
-                gamePanel.getGame().getPlayer().setDown(true);
+            default:
                 break;
         }
 
@@ -66,19 +62,14 @@ public class KeyboardInputs implements KeyListener {
     /* */
     @Override
     public void keyReleased(KeyEvent e) {
-
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_W:
-                gamePanel.getGame().getPlayer().setUp(false);
+        switch (Gamestate.state) {
+            case MENU:
+                gamePanel.getGame().getMenu().keyReleased(e);
                 break;
-            case KeyEvent.VK_A:
-                gamePanel.getGame().getPlayer().setLeft(false);
+            case PLAYING:
+                gamePanel.getGame().getPlaying().keyReleased(e);
                 break;
-            case KeyEvent.VK_D:
-                gamePanel.getGame().getPlayer().setRight(false);
-                break;
-            case KeyEvent.VK_S:
-                gamePanel.getGame().getPlayer().setDown(false);
+            default:
                 break;
         }
     }
