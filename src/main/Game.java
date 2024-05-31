@@ -184,7 +184,7 @@ public class Game implements Runnable {
             // still smaller than the currenttime value, since time continue to progress
             if (System.currentTimeMillis() - lastCheck >= 1000) {
                 lastCheck = System.currentTimeMillis();
-                System.out.println("FPS: " + frame + "  UPS: " + update);
+                System.out.println("FPS: " + frame + " UPS: " + update);
                 frame = 0;
                 update = 0;
             }

@@ -19,6 +19,8 @@ public class LoadSave {
     public static final String LEVEL_ONE_DATA = "src/images/level_one_data.png";
     public static final String MENU_BUTTONS = "src/images/button_atlas.png";
     public static final String MENU_BACKGROUND = "src/images/menu_background.png";
+    public static final String PAUSED_BACKGROUND = "src/images/pause_menu.png";
+    public static final String SOUND_BUTTONS = "src/images/sound_button.png";
 
     public static BufferedImage GetSpritesAtlas(String filename) {
         BufferedImage image = null; // Initialize the image variable with null.
@@ -40,9 +42,11 @@ public class LoadSave {
             for (int i = 0; i < img.getWidth(); i++) {
                 Color color = new Color(img.getRGB(i, j));
                 int value = color.getRed();
+
                 if (value >= 48)
                     value = 0;
                 lvlData[j][i] = value;
+
             }
         return lvlData;
 
