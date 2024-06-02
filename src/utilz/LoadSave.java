@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +21,8 @@ public class LoadSave {
     public static final String MENU_BACKGROUND = "src/images/menu_background.png";
     public static final String PAUSED_BACKGROUND = "src/images/pause_menu.png";
     public static final String SOUND_BUTTONS = "src/images/sound_button.png";
+    public static final String URM_BUTTONS = "src/images/urm_buttons.png";
+    public static final String VOLUME_BUTTONS = "src/images/volume_buttons.png";
 
     public static BufferedImage GetSpritesAtlas(String filename) {
         BufferedImage image = null; // Initialize the image variable with null.
