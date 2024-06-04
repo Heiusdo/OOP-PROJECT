@@ -25,6 +25,9 @@ public class LoadSave {
     public static final String URM_BUTTONS = "src/images/urm_buttons.png";
     public static final String VOLUME_BUTTONS = "src/images/volume_buttons.png";
     public static final String MENU_BACKGROUND_IMG = "src/images/background_menu.png";
+    public static final String PLAYING_BG_IMG = "src/images/playing_bg_img.png";
+    public static final String BIG_CLOUDS = "src/images/big_clouds.png";
+    public static final String SMALL_CLOUDS = "src/images/small_clouds.png";
 
     public static BufferedImage GetSpritesAtlas(String filename) {
         BufferedImage image = null; // Initialize the image variable with null.
