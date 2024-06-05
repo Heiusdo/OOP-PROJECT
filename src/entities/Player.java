@@ -57,7 +57,7 @@ public class Player extends Entity {
 
     // This method is responsible for updating the animation tick and the animation
     // index. The animation tick is a counter that increments every time this method
-    // is called. When it reaches or exceeds the animation speed (which is 30, in
+    // is called. When it reaches or exceeds the animation speed (which is 25, in
     // this case), it resets to 0 and increments the animation index. The animation
     // index is used to determine which frame of the animation to display. When it
     // reaches or exceeds the length of the animation array, it resets to 0.
