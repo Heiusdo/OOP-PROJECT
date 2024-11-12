@@ -37,6 +37,8 @@ public class Player extends Entity {
     public Player(float x, float y, int width, int height) {
         super(x, y, width, height);
         loadAnimation();
+        // The hitbox is indeed attached to the player because its x and y coordinates
+        // are based on the player's x and y coordinates.
         inithitbox(x, y, (int) (20 * Game.SCALE), (int) (27 * Game.SCALE));
 
     }
@@ -62,10 +64,10 @@ public class Player extends Entity {
     // index is used to determine which frame of the animation to display. When it
     // reaches or exceeds the length of the animation array, it resets to 0.
     // --
-    // it will keep drawing the same image of til the animationtick reach 30, then
+    // it will keep drawing the same image of til the animationtick reach 25, then
     // animationIndex is incremented to 1
     // After this, animationTick is reset to 0, and the process repeats.
-    // animationIndex continues to increment every 30 iterations of
+    // animationIndex continues to increment every 25 iterations of
     // updateAnimationTick(), allowing for smooth animation in the game.
     // --
     // at first animationtick and index are 0.
@@ -76,7 +78,7 @@ public class Player extends Entity {
     // the comments above is for the old version of the game with 1D array,
     // the new version of the game is using 2D array.
     // the reason why we have to set animationIndex >= GetSpriteAmount(playerAction)
-    // but not 6 ( the max column value of the array ), is because the
+    // but not 6 ( the max column value of the array ), is because of the
     // GetSpriteAmount method is used to get the amount of sprite in each action, so
     // it is more dynamic and flexible, and some action does not have enough 6
     // sprites.

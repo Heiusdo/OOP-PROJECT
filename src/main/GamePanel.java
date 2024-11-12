@@ -7,9 +7,10 @@ import input.MouseInputs;
 // import java.awt.Graphics;
 // import java.awt.event.KeyListener;
 
-import java.awt.*; // this is used for importing Graphics class ( java.awt.Graphics)
-import static main.Game.GAME_WIDTH;
 import static main.Game.GAME_HEIGHT;
+import static main.Game.GAME_WIDTH;
+
+import java.awt.*; // this is used for importing Graphics class ( java.awt.Graphics)
 
 public class GamePanel extends JPanel {
 

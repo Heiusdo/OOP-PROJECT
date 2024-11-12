@@ -9,7 +9,7 @@ import utilz.LoadSave;
 import static utilz.Constants.EnemyConstants.CRABBY_HEIGHT_DEFAULT;
 import static utilz.Constants.EnemyConstants.CRABBY_WIDTH_DEFAULT;
 import static utilz.Constants.EnemyConstants.CRABBY_HEIGHT;
-import static utilz.Constants.EnemyConstants.CRABBY_WIDTH;;
+import static utilz.Constants.EnemyConstants.CRABBY_WIDTH;
 
 public class EnemyManager {
 
@@ -28,9 +28,9 @@ public class EnemyManager {
         System.out.println("size of crabs: " + crabbies.size());
     }
 
-    public void update() {
+    public void update(int[][] lvlData) {
         for (Crabby c : crabbies)
-            c.update();
+            c.update(lvlData);
     }
 
     public void draw(Graphics g, int xLvlOffset) {
