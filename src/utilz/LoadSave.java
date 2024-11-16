@@ -32,6 +32,7 @@ public class LoadSave {
     public static final String BIG_CLOUDS = "src/images/big_clouds.png";
     public static final String SMALL_CLOUDS = "src/images/small_clouds.png";
     public static final String CRABBY_SPRITE = "src/images/crabby_sprite.png";
+    public static final String STATUS_BAR = "src/images/health_power_bar.png";
 
     public static BufferedImage GetSpritesAtlas(String filename) {
         BufferedImage image = null; // Initialize the image variable with null.

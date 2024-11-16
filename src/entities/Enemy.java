@@ -8,7 +8,7 @@ import main.Game;
 
 public abstract class Enemy extends Entity {
     protected int animationIndex, enemyState, enemyType;
-    protected int animationTick, aniSpeed = 25;
+    protected int animationTick, aniSpeed = 30;
     protected boolean firstUpdate = true;
     protected boolean inAir;
     protected float fallSpeed;

@@ -6,16 +6,22 @@ import static utilz.HelpMethod.GetEntityXPosNextToWall;
 import static utilz.HelpMethod.GetEntityYPosUnderRoofOrAboveFloor;
 import static utilz.HelpMethod.IsEntityOnFloor;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.Rectangle2D.Float;
+import java.awt.image.BufferedImage;
 
+import gamestates.Playing;
 import main.Game;
 import utilz.LoadSave;
 
 public class Player extends Entity {
     private BufferedImage[][] animation;
-    private int animationTick, animationIndex, animationSpeed = 25;
-    private int playerAction = idle;
+    private int animationTick, animationIndex, animationSpeed = 20;
+    private int playerAction = IDLE;
+    private boolean moving = false, attacking = false;
     private boolean left, up, right, down, jump;
     private float playerSpeed = 2.0f;
     private int[][] lvlData;
@@ -32,7 +38,41 @@ public class Player extends Entity {
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
     private boolean inAir = false;
 
-    private boolean moving = false, attacking = false;
+    // StatusBarUI
+    private BufferedImage statusBarImg;
+    // the size of the status bar, which is 192x58 pixels, is multiplied by the
+    // scale
+    private int statusBarWidth = (int) (192 * Game.SCALE);
+    private int statusBarHeight = (int) (58 * Game.SCALE);
+    // the x and y coordinates of the status bar are set to 10 pixels from the top
+    // left
+    private int statusBarX = (int) (10 * Game.SCALE);
+    private int statusBarY = (int) (10 * Game.SCALE);
+
+    // the size of the health bar is 150x4 pixels, and its x and y coordinates are
+    // set to 34 and 14 pixels from the top left corner of the status bar,
+    // respectively
+    private int healthBarWidth = (int) (150 * Game.SCALE);
+    private int healthBarHeight = (int) (4 * Game.SCALE);
+    private int healthBarXStart = (int) (34 * Game.SCALE);
+    private int healthBarYStart = (int) (14 * Game.SCALE);
+
+    private int maxHealth = 10;
+    private int currentHealth = maxHealth;
+    private int healthWidth = healthBarWidth;
+
+    // AttackBox
+
+    // if the enemy is in this attackbox, the enemy will take damage
+    private Rectangle2D.Float attackBox;
+
+    // flipX and flipW are used to flip the player sprite horizontally.( quay ngược
+    // lại)
+    private int flipX = 0;
+    private int flipW = 1;
+
+    private boolean attackChecked;
+    private Playing playing;
 
     public Player(float x, float y, int width, int height) {
         super(x, y, width, height);
@@ -40,21 +80,89 @@ public class Player extends Entity {
         // The hitbox is indeed attached to the player because its x and y coordinates
         // are based on the player's x and y coordinates.
         inithitbox(x, y, (int) (20 * Game.SCALE), (int) (27 * Game.SCALE));
+        initAttackBox();
 
     }
 
+    private void initAttackBox() {
+        attackBox = new Rectangle2D.Float(x, y, (int) (20 * Game.SCALE), (int) (20 * Game.SCALE));
+    }
+
     public void update() {
+        updateHealthBar();
+        if (currentHealth <= 0) {
+            // playing.setGameOver(true);
+            return;
+        }
+        updateAttackBox();
         updatePosition();
+        // if (attacking)
+        // checkAttack();
 
         updateAnimationTick();
         setAnimation();
 
     }
 
+    private void updateAttackBox() {
+        if (right)
+            attackBox.x = hitbox.x + hitbox.width + (int) (Game.SCALE * 10);
+        else if (left)
+            attackBox.x = hitbox.x - hitbox.width - (int) (Game.SCALE * 10);
+
+        attackBox.y = hitbox.y + (Game.SCALE * 10);
+    }
+
+    private void updateHealthBar() {
+        // máu hiện tại = máu tối đa chia cho máu tối đa nhân với chiều rộng của thanh
+        healthWidth = (int) ((currentHealth / (float) maxHealth) * healthBarWidth);
+    }
+
     public void render(Graphics g, int lvlOffset) {
-        g.drawImage(animation[playerAction][animationIndex], (int) (hitbox.x - xDrawOffset) - lvlOffset,
-                (int) (hitbox.y - yDrawOffset), width, height, null);
+        // xDrawOffset và yDrawOffset được sử dụng để giảm thiểu hitbox quay quanh nhân
+        // vật, - lvlOffset là để vẽ nhân vật ở vị trí cố định, + flipX là để quay ngược
+        // lại, width * flipW là để quay ngược lại
+        g.drawImage(animation[playerAction][animationIndex], (int) (hitbox.x - xDrawOffset) - lvlOffset + flipX,
+                (int) (hitbox.y - yDrawOffset), width * flipW, height, null);
         // drawHitbox(g);
+        drawAttackBox(g, lvlOffset);
+        drawUI(g);
+    }
+
+    private void drawAttackBox(Graphics g, int lvlOffsetX) {
+        g.setColor(Color.red);
+        g.drawRect((int) attackBox.x - lvlOffsetX, (int) attackBox.y, (int) attackBox.width, (int) attackBox.height);
+
+    }
+
+    private void drawUI(Graphics g) {
+        /*
+         * (int) (hitbox.x - xDrawOffset) - lvlOffset + flipX:
+         * hitbox.x: Là tọa độ x của hộp va chạm của nhân vật.
+         * xDrawOffset: Là một giá trị điều chỉnh (có thể để căn giữa hoặc căn chỉnh
+         * hình ảnh).
+         * lvlOffset: Là độ dịch chuyển của cấp độ, có thể dùng để điều chỉnh vị trí vẽ
+         * theo môi trường.
+         * flipX: Biến này được sử dụng để điều chỉnh vị trí vẽ dựa trên hướng của nhân
+         * vật. Nếu nhân vật đang di chuyển sang trái, flipX có thể được đặt bằng chiều
+         * rộng của nhân vật, giúp hình ảnh được vẽ từ vị trí bên phải.
+         */
+
+        /*
+         * width * flipW:
+         * 
+         * Đây là chiều rộng của hình ảnh được vẽ. Nếu flipW là 1 (khi nhân vật đang
+         * hướng sang phải), chiều rộng sẽ giữ nguyên. Nếu flipW là -1 (khi nhân vật
+         * đang hướng sang trái), điều này sẽ làm cho chiều rộng trở thành âm, gây ra
+         * hiệu ứng lật hình ảnh theo chiều ngang.
+         */
+        g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
+        g.setColor(Color.red);
+        // statusBar là 1 ô trạng thái chứa trạng thái của player bao gồm cả thanh máu
+        // là healthBar, và thanh máu được vẽ bên trong statusBar, mà vị trí khởi đầu
+        // của status bar là 10, 10, và thanh máu bắt đầu từ 34, 14, nên khi vẽ thanh
+        // máu, phải cộng thêm với vị trí khởi đầu của status bar.
+        g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
     }
 
     // This method is responsible for updating the animation tick and the animation
@@ -103,17 +211,17 @@ public class Player extends Entity {
         if (moving) {
             playerAction = RUNNING;
         } else {
-            playerAction = idle;
+            playerAction = IDLE;
         }
         if (inAir) {
             if (airSpeed < 0)
                 playerAction = FALLING;
             else
-                playerAction = JUMPING;
+                playerAction = JUMP;
         }
 
         if (attacking) {
-            playerAction = ATTACK_1;
+            playerAction = ATTACK;
         }
         if (startAnimation != playerAction) {
             resetAnimationTick();
@@ -134,20 +242,27 @@ public class Player extends Entity {
     private void updatePosition() {
 
         moving = false;
+
         if (jump)
             jump();
-        // if (!left && !right && !inAir)
-        // return;
+
         if (!inAir)
             if ((!left && !right) || (right && left))
                 return;
 
         float xSpeed = 0;
 
-        if (left)
+        if (left) {
             xSpeed -= playerSpeed;
-        if (right)
+            flipX = width;
+            flipW = -1;
+        }
+        if (right) {
             xSpeed += playerSpeed;
+            flipX = 0;
+            flipW = 1;
+        }
+
         if (!inAir)
             if (!IsEntityOnFloor(hitbox, lvlData))
                 inAir = true;
@@ -165,10 +280,10 @@ public class Player extends Entity {
                     airSpeed = fallSpeedAfterCollision;
                 updateXposition(xSpeed);
             }
-        } else {
+
+        } else
             updateXposition(xSpeed);
-            moving = true;
-        }
+        moving = true;
         // if (CanMoveHere(x + xSpeed, y + ySpeed, width, height, lvlData)) {
         // this.x += xSpeed;
         // this.y += ySpeed;
@@ -205,12 +320,21 @@ public class Player extends Entity {
         }
     }
 
+    public void changeHealth(int value) {
+        currentHealth += value;
+
+        if (currentHealth <= 0)
+            currentHealth = 0;
+        else if (currentHealth >= maxHealth)
+            currentHealth = maxHealth;
+    }
+
     private void loadAnimation() {
         BufferedImage image = LoadSave.GetSpritesAtlas(LoadSave.PLAYER_ATLAS);
         // the line below is used to create an array of BufferedImage with the size of
-        // 9x6 (9 rows and 6 columns). Each element in this array represent a frame of
+        // 7x8 (7 rows and 8 columns). Each element in this array represent a frame of
         // the animation.
-        animation = new BufferedImage[9][6];
+        animation = new BufferedImage[7][8];
         for (int i = 0; i < animation.length; i++) {
             for (int j = 0; j < animation[i].length; j++) {
                 // the image.getSubimage() is used to cut the image into pieces
@@ -218,8 +342,10 @@ public class Player extends Entity {
                 // animation array.
                 // subimage(x, y, width, height)
                 animation[i][j] = image.getSubimage(j * 64, i * 40, 64, 40);
+
             }
         }
+        statusBarImg = LoadSave.GetSpritesAtlas(LoadSave.STATUS_BAR);
     }
 
     public void loadLvlData(int[][] lvlData) {
