@@ -61,6 +61,17 @@ public class Crabby extends Enemy {
 
                     move(lvlData);
                     break;
+                case ATTACK:
+                    if (animationIndex == 0)
+                        attackChecked = false;
+
+                    // check if player is hit by enemy when the attack animation is at the 3rd frame
+                    if (animationIndex == 3 && !attackChecked)
+                        checkPlayerHit(attackBox, player);
+
+                    break;
+                case HIT:
+                    break;
             }
         }
 

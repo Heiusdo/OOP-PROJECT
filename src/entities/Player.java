@@ -57,7 +57,7 @@ public class Player extends Entity {
     private int healthBarXStart = (int) (34 * Game.SCALE);
     private int healthBarYStart = (int) (14 * Game.SCALE);
 
-    private int maxHealth = 10;
+    private int maxHealth = 100;
     private int currentHealth = maxHealth;
     private int healthWidth = healthBarWidth;
 
@@ -74,8 +74,9 @@ public class Player extends Entity {
     private boolean attackChecked;
     private Playing playing;
 
-    public Player(float x, float y, int width, int height) {
+    public Player(float x, float y, int width, int height, Playing playing) {
         super(x, y, width, height);
+        this.playing = playing;
         loadAnimation();
         // The hitbox is indeed attached to the player because its x and y coordinates
         // are based on the player's x and y coordinates.
@@ -91,16 +92,40 @@ public class Player extends Entity {
     public void update() {
         updateHealthBar();
         if (currentHealth <= 0) {
-            // playing.setGameOver(true);
+            playing.setGameOver(true);
             return;
         }
         updateAttackBox();
         updatePosition();
-        // if (attacking)
-        // checkAttack();
+        if (attacking)
+            checkAttack();
 
         updateAnimationTick();
         setAnimation();
+
+    }
+
+    /*
+     * Purpose: To determine when the player’s attack should actually check for
+     * collisions with enemies.
+     * When It Runs:
+     * Only during specific frames of the attack animation.
+     * Specifically, when the player’s attack animation reaches the correct frame
+     * (animationIndex == 1 in this case).
+     * 
+     */
+    private void checkAttack() {
+        /*
+         * This if condition determines whether the method should skip the collision
+         * detection for the attack.
+         * 
+         * If the attack has already been checked equal false ( it is false by default)
+         * or the animation index is not 1, no damage will be dealt.
+         */
+        if (attackChecked || animationIndex != 1)
+            return;
+        attackChecked = true;
+        playing.handleEnemyHit(attackBox);
 
     }
 
@@ -140,7 +165,8 @@ public class Player extends Entity {
          * (int) (hitbox.x - xDrawOffset) - lvlOffset + flipX:
          * hitbox.x: Là tọa độ x của hộp va chạm của nhân vật.
          * xDrawOffset: Là một giá trị điều chỉnh (có thể để căn giữa hoặc căn chỉnh
-         * hình ảnh).
+         * hình ảnh, kiểu như 1 pixel chiều rộng là 22, nhưng vật thì chỉ dài 10, thì
+         * phải trừ đi cái khoảng cách từ viền pixel đến vật, để hitbox sát vật hơn.
          * lvlOffset: Là độ dịch chuyển của cấp độ, có thể dùng để điều chỉnh vị trí vẽ
          * theo môi trường.
          * flipX: Biến này được sử dụng để điều chỉnh vị trí vẽ dựa trên hướng của nhân
@@ -198,6 +224,7 @@ public class Player extends Entity {
             if (animationIndex >= GetSpriteAmount(playerAction)) {
                 animationIndex = 0;
                 attacking = false;
+                attackChecked = false;
             }
         }
     }
@@ -222,6 +249,11 @@ public class Player extends Entity {
 
         if (attacking) {
             playerAction = ATTACK;
+            if (startAnimation != ATTACK) {
+                animationIndex = 1;
+                animationTick = 0;
+                return;
+            }
         }
         if (startAnimation != playerAction) {
             resetAnimationTick();
@@ -403,5 +435,23 @@ public class Player extends Entity {
         right = false;
         up = false;
         down = false;
+    }
+
+    public void resetAll() {
+        // the reason why we have to reset the dir booleans is because if we dont reset
+        // it when we press the key, the key will be stuck and the player will keep on
+        // moving.
+        resetDirBooleans();
+        inAir = false;
+        attacking = false;
+        moving = false;
+        playerAction = IDLE;
+        currentHealth = maxHealth;
+
+        hitbox.x = x;
+        hitbox.y = y;
+
+        if (!IsEntityOnFloor(hitbox, lvlData))
+            inAir = true;
     }
 }
