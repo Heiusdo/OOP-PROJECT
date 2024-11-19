@@ -9,6 +9,7 @@ import java.util.Random;
 import java.awt.image.BufferedImage;
 
 import UI.GameOverOverlay;
+import UI.LevelCompletedOverLay;
 import UI.PauseOverLay;
 import entities.EnemyManager;
 import entities.Player;
@@ -23,24 +24,32 @@ public class Playing extends State implements Statemethods {
     private EnemyManager enemyManager;
     private PauseOverLay pauseOverlay;
     private GameOverOverlay gameOverOverlay;
+    private LevelCompletedOverLay levelCompletedOverlay;
     private boolean paused = false;
 
     private int xLvlOffset;
     private int leftBorder = (int) (0.2 * Game.GAME_WIDTH);
     private int rightBorder = (int) (0.8 * Game.GAME_WIDTH);
-    // calculating how many tiles the entire level is in width
-    private int lvlTilesWide = LoadSave.GetLevelData()[0].length;
-    // game width = 20 tiles, lvl width = 30 tiles, so maxTilesOffset is 10 ( the
-    // part we cant see due to the game width)
-    private int maxTilesOffset = lvlTilesWide - Game.TILES_IN_WIDTH;
-    // turning the maxTilesOffset into pixels
-    private int maxLvlOffsetX = maxTilesOffset * Game.TILES_SIZE;
+    /*
+     * this is the old code, which had been moved to level class and been replaced
+     * by the following code
+     * 
+     * // calculating how many tiles the entire level is in width
+     * private int lvlTilesWide = LoadSave.GetLevelData()[0].length;
+     * // game width = 20 tiles, lvl width = 30 tiles, so maxTilesOffset is 10 ( the
+     * // part we cant see due to the game width)
+     * private int maxTilesOffset = lvlTilesWide - Game.TILES_IN_WIDTH;
+     * // turning the maxTilesOffset into pixels
+     * private int maxLvlOffsetX = maxTilesOffset * Game.TILES_SIZE;
+     */
+    private int maxLvlOffsetX;
 
     private BufferedImage backgroundImg, bigCloud, smallCloud;
     private int[] smallCloudsPos;
     private Random rnd = new Random();
 
     private boolean gameOver;
+    private boolean lvlCompleted;
 
     public Playing(Game game) {
         super(game);
@@ -52,6 +61,32 @@ public class Playing extends State implements Statemethods {
         smallCloudsPos = new int[8];
         for (int i = 0; i < smallCloudsPos.length; i++)
             smallCloudsPos[i] = (int) (90 * Game.SCALE) + rnd.nextInt((int) (100 * Game.SCALE));
+
+        calcLvlOffset();
+        loadStartLevel();
+    }
+
+    /*
+     * loadNextLevel of levelManager is called to load the next level. The playing's
+     * is used to reset all the entities and variables in the playing state. The
+     * player's spawn is set to the current level's player spawn.
+     * 
+     * giống tên nhưng khác chức năng. loadNextLevel của levelManager được gọi để
+     * tải level tiếp theo. playing's được sử dụng để reset tất cả các thực thể và
+     * biến trong trạng thái playing.
+     */
+    public void loadNextLevel() {
+        resetAll();
+        levelManager.loadNextLevel();
+        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+    }
+
+    private void loadStartLevel() {
+        enemyManager.loadEnemies(levelManager.getCurrentLevel());
+    }
+
+    private void calcLvlOffset() {
+        maxLvlOffsetX = levelManager.getCurrentLevel().getLvlOffset();
     }
 
     private void initClasses() {
@@ -61,17 +96,20 @@ public class Playing extends State implements Statemethods {
         player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
         pauseOverlay = new PauseOverLay(this);
         gameOverOverlay = new GameOverOverlay(this);
+        levelCompletedOverlay = new LevelCompletedOverLay(this);
     }
 
     @Override
     public void update() {
-        if (!paused) {
+        if (paused) {
+            pauseOverlay.update();
+        } else if (lvlCompleted) {
+            levelCompletedOverlay.update();
+        } else if (!gameOver) {
             levelManager.update();
             player.update();
             enemyManager.update(levelManager.getCurrentLevel().getLevelData(), player);
             checkCloseToBorder();
-        } else {
-            pauseOverlay.update();
         }
     }
 
@@ -107,6 +145,8 @@ public class Playing extends State implements Statemethods {
             pauseOverlay.draw(g);
         } else if (gameOver)
             gameOverOverlay.draw(g);
+        else if (lvlCompleted)
+            levelCompletedOverlay.draw(g);
     }
 
     private void drawClouds(Graphics g) {
@@ -120,9 +160,16 @@ public class Playing extends State implements Statemethods {
 
     }
 
+    /*
+     * tác dụng của hàm này là reset tất cả các biến và đối tượng trong trạng thái
+     * resetAll() của player là để reset tất cả các biến của người chơi, resetAll()
+     * của playing là để reset cả player và enemyManager, giống tên nhưng khác chức
+     * năng.
+     */
     public void resetAll() {
         gameOver = false;
         paused = false;
+        lvlCompleted = false;
         player.resetAll();
         enemyManager.resetAllEnemies();
     }
@@ -132,7 +179,16 @@ public class Playing extends State implements Statemethods {
     }
 
     /*
+     * ban đầu tên của method là checkEnemyHit, nhưng sau đó đã được đổi thành
+     * handleEnemyHit để phù hợp với chức năng của nó và tránh nhầm lẫn với
+     * checkEnemyHit của EnemyManager.
+     * 
      * Purpose: Acts as a bridge between the Player and the EnemyManager.
+     * tác dụng làm cầu nối giữa Player và EnemyManager. Nó nhận hitbox tấn công của
+     * người chơi (attackBox) và gọi enemyManager.checkEnemyHit(attackBox) để chuyển
+     * tiếp hitbox và cho phép EnemyManager xử lý phát hiện va chạm chi tiết với kẻ
+     * thù.
+     * 
      * Flow:
      * Receives the player's attack hitbox (attackBox).
      * Calls enemyManager.checkEnemyHit(attackBox) to forward the hitbox and let the
@@ -201,36 +257,55 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (!gameOver)
+        if (!gameOver) {
             if (paused)
                 pauseOverlay.mousePressed(e);
-
+            else if (lvlCompleted)
+                levelCompletedOverlay.mousePressed(e);
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (!gameOver)
+        if (!gameOver) {
             if (paused)
                 pauseOverlay.mouseReleased(e);
+            else if (lvlCompleted)
+                levelCompletedOverlay.mouseReleased(e);
+        }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (!gameOver)
+        if (!gameOver) {
             if (paused)
                 pauseOverlay.mouseMoved(e);
+            else if (lvlCompleted)
+                levelCompletedOverlay.mouseMoved(e);
+        }
+    }
+
+    public void setLevelCompleted(boolean levelCompleted) {
+        this.lvlCompleted = levelCompleted;
+    }
+
+    public void setMaxLvlOffset(int lvlOffset) {
+        this.maxLvlOffsetX = lvlOffset;
     }
 
     public void unpauseGame() {
         paused = false;
     }
 
+    public void windowFocusLost() {
+        player.resetDirBooleans();
+    }
+
     public Player getPlayer() {
         return player;
     }
 
-    public void WindowFocusLost() {
-        player.resetDirBooleans();
-
+    public EnemyManager getEnemyManager() {
+        return enemyManager;
     }
 }

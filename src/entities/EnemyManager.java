@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import gamestates.Playing;
+import levels.Level;
 import utilz.LoadSave;
 import static utilz.Constants.EnemyConstants.CRABBY_HEIGHT_DEFAULT;
 import static utilz.Constants.EnemyConstants.CRABBY_WIDTH_DEFAULT;
@@ -23,11 +24,11 @@ public class EnemyManager {
     public EnemyManager(Playing playing) {
         this.playing = playing;
         loadEnemyImgs();
-        addEnemies();
+
     }
 
-    private void addEnemies() {
-        crabbies = LoadSave.GetCrabs();
+    public void loadEnemies(Level level) {
+        crabbies = level.getCrabs();
         System.out.println("size of crabs: " + crabbies.size());
     }
 
@@ -48,8 +49,8 @@ public class EnemyManager {
                         (int) c.getHitbox().x - xLvlOffset - CRABBY_DRAWOFFSET_X + c.flipX(),
                         (int) c.getHitbox().y - CRABBY_DRAWOFFSET_Y,
                         CRABBY_WIDTH * c.flipW(), CRABBY_HEIGHT, null);
-                c.drawHitbox(g, xLvlOffset);
-                c.drawAttackBox(g, xLvlOffset);
+                // c.drawHitbox(g, xLvlOffset);
+                // c.drawAttackBox(g, xLvlOffset);
 
             }
 

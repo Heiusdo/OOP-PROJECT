@@ -1,7 +1,14 @@
 package utilz;
 
-import java.awt.geom.Rectangle2D;
+import static utilz.Constants.EnemyConstants.CRABBY;
 
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
+import entities.Crabby;
 import main.Game;
 
 public class HelpMethod {
@@ -81,7 +88,21 @@ public class HelpMethod {
      * its going right.
      */
     public static boolean IsFloor(Rectangle2D.Float hitbox, float xSpeed, int[][] lvlData) {
-        return IsSolid(hitbox.x + xSpeed, hitbox.y + hitbox.height + 1, lvlData);
+        // going to the right
+        if (xSpeed > 0)
+            /*
+             * hitbox.x: The x-coordinate of the left side of the hitbox.
+             * hitbox.width: This gives the width of the hitbox, so hitbox.x + hitbox.width
+             * gives the x-coordinate of the right side of the hitbox.
+             * + xSpeed: This adds the distance moved to the right to the right edge of the
+             * hitbox, giving us the new position of the bottom right corner after the
+             * movement.
+             * hitbox.y + hitbox.height + 1: This checks just below the bottom edge of the
+             * hitbox to see if there is a solid surface.
+             */
+            return IsSolid(hitbox.x + hitbox.width + xSpeed, hitbox.y + hitbox.height + 1, lvlData);
+        else
+            return IsSolid(hitbox.x + xSpeed, hitbox.y + hitbox.height + 1, lvlData);
     }
 
     public static boolean IsAllTilesWalkable(int xStart, int xEnd, int y, int[][] lvlData) {
@@ -109,4 +130,39 @@ public class HelpMethod {
 
     }
 
+    public static int[][] GetLevelData(BufferedImage img) {
+        int[][] lvlData = new int[img.getHeight()][img.getWidth()];
+        for (int j = 0; j < img.getHeight(); j++)
+            for (int i = 0; i < img.getWidth(); i++) {
+                Color color = new Color(img.getRGB(i, j));
+                int value = color.getRed();
+                if (value >= 48)
+                    value = 0;
+                lvlData[j][i] = value;
+            }
+        return lvlData;
+    }
+
+    public static ArrayList<Crabby> GetCrabs(BufferedImage img) {
+        ArrayList<Crabby> list = new ArrayList<>();
+        for (int j = 0; j < img.getHeight(); j++)
+            for (int i = 0; i < img.getWidth(); i++) {
+                Color color = new Color(img.getRGB(i, j));
+                int value = color.getGreen();
+                if (value == CRABBY)
+                    list.add(new Crabby(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
+            }
+        return list;
+    }
+
+    public static Point GetPlayerSpawn(BufferedImage img) {
+        for (int j = 0; j < img.getHeight(); j++)
+            for (int i = 0; i < img.getWidth(); i++) {
+                Color color = new Color(img.getRGB(i, j));
+                int value = color.getGreen();
+                if (value == 100)
+                    return new Point(i * Game.TILES_SIZE, j * Game.TILES_SIZE);
+            }
+        return new Point(1 * Game.TILES_SIZE, 1 * Game.TILES_SIZE);
+    }
 }
