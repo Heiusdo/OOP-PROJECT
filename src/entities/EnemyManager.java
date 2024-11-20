@@ -32,10 +32,19 @@ public class EnemyManager {
         System.out.println("size of crabs: " + crabbies.size());
     }
 
+    /*
+     * here is where the passing level conditions are checked (qua màn), we move to
+     * the next level when all enemies are dead
+     */
     public void update(int[][] lvlData, Player player) {
+        boolean isAnyActive = false;
         for (Crabby c : crabbies)
-            if (c.isActive())
+            if (c.isActive()) {
                 c.update(lvlData, player);
+                isAnyActive = true;
+            }
+        if (!isAnyActive)
+            playing.setLevelCompleted(true);
     }
 
     public void draw(Graphics g, int xLvlOffset) {

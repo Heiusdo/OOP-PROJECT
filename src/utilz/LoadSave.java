@@ -47,6 +47,7 @@ public class LoadSave {
         }
         return image;
     }
+
     /*
      * this is the original method that now in the HelpMethod class, it is used to
      * spawn crabs in 1 level, but now the game has multiple levels so it is not
@@ -87,9 +88,12 @@ public class LoadSave {
      * 
      * }
      */
-
+    /*
+     * this method gets all the levels in the images/lvls folder and returns them as
+     * a BufferedImage array that contains all the levels
+     */
     public static BufferedImage[] GetAllLevels() {
-        URL url = loadSave.class.getResource("/lvls");
+        URL url = LoadSave.class.getResource("/images/lvls");
         File file = null;
 
         try {
@@ -99,25 +103,25 @@ public class LoadSave {
         }
 
         File[] files = file.listFiles();
-        File[] fileSorted = new File[files.length];
-        for (int i = 0; i < fileSorted.length; ++i) {
-            for (int j = 0; j < files.length; ++j) {
-                if (files[j].getName().equals(i + 1 + ".png")) {
-                    fileSorted[i] = files[j];
-                }
-            }
-        }
+        File[] filesSorted = new File[files.length];
 
-        BufferedImage[] imgs = new BufferedImage[fileSorted.length];
-        for (int i = 0; i < fileSorted.length; ++i) {
+        for (int i = 0; i < filesSorted.length; i++)
+            for (int j = 0; j < files.length; j++) {
+                if (files[j].getName().equals((i + 1) + ".png"))
+                    filesSorted[i] = files[j];
+
+            }
+
+        BufferedImage[] imgs = new BufferedImage[filesSorted.length];
+
+        for (int i = 0; i < imgs.length; i++)
             try {
-                imgs[i] = ImageIO.read(fileSorted[i]);
-            } catch (Exception e) {
+                imgs[i] = ImageIO.read(filesSorted[i]);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        return imgs;
 
+        return imgs;
     }
 
 }
