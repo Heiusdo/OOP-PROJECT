@@ -35,7 +35,7 @@ public class Player extends Entity {
     // gravity is a constant, the lower the gravity value is, the higher the
     // character can jump
     private float gravity = 0.04f * Game.SCALE;
-    private float jumpSpeed = -2.25f * Game.SCALE;
+    private float jumpSpeed = -3.2f * Game.SCALE;
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
     private boolean inAir = false;
 
